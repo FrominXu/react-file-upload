@@ -4,8 +4,19 @@ const cors = require("cors");
 const app = express();
 app.use(cors());
 
-var upload = multer({ dest: "../public/uploads/" });
-app.post("/upload", upload.single("file"), async (req, res) => {
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, '../public/uploads/');
+  },
+  filename: function (req, file, cb) {
+    // 使用原始文件名（包括扩展名）
+    cb(null, file.originalname);
+  }
+});
+
+var upload = multer({ storage: storage });
+
+app.post("/upload", upload.single("file",), async (req, res) => {
   try {    
     if (req.file) {
       res.send({
